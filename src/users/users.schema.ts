@@ -4,7 +4,16 @@ import * as validator from 'validator';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 
-export type UserDocument = HydratedDocument<User>;
+export interface UserMethods {
+  correctPassword(
+    candidatePassword: string,
+    userPassword: string,
+  ): Promise<boolean>;
+  changedPasswordAfter(jwtIssueTimestamp: number): boolean;
+  createPasswordResetToken(): string;
+}
+
+export type UserDocument = HydratedDocument<User> & UserMethods;
 
 export enum UserRole {
   USER = 'user',
