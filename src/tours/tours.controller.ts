@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ToursService } from './tours.service';
-import { Tour } from './tour.schema';
+import { Tour } from './tours.schema';
 
 @Controller('tours')
 export class ToursController {

@@ -4,7 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { ToursModule } from './tours/tours.module';
 import { ConfigModule } from '@nestjs/config';
-import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -16,6 +15,5 @@ import { UsersModule } from './users/users.module';
     ToursModule,
     UsersModule,
   ],
-  controllers: [UsersController],
 })
 export class AppModule {}

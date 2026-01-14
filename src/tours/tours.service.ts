@@ -1,5 +1,5 @@
 import { Injectable, Query } from '@nestjs/common';
-import { Tour, TourDocument } from './tour.schema';
+import { Tour, TourDocument } from './tours.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { APIFeatures } from 'src/utils/apiFeatures';
@@ -35,7 +35,7 @@ export class ToursService {
   }
 
   async deleteOne(id: string) {
-    await this.tourModel.deleteOne({ _id: id });
+    return await this.tourModel.findOneAndDelete({ _id: id });
   }
 
   async findOneAndUpdate(id: string, body: Tour): Promise<Tour> {

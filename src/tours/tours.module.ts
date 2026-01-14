@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TourSchema, Tour } from './tour.schema';
+import { TourSchema, Tour } from './tours.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ToursController } from './tours.controller';
 import { ToursService } from './tours.service';
