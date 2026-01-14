@@ -1,5 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, Query, Types } from 'mongoose';
+import slugify from 'slugify';
 
 export type TourDocument = HydratedDocument<Tour>;
 
@@ -84,3 +85,58 @@ export class Tour {
 }
 
 export const TourSchema = SchemaFactory.createForClass(Tour);
+
+TourSchema.index({ price: 1, ratingsAverage: -1 });
+TourSchema.index({ slug: 1 });
+TourSchema.index({ startLocation: '2dsphere' });
+
+// Virtual populate the reviews, without having them embedded as references in the tour model.
+// This 'connects the two models together'
+TourSchema.virtual('reviews', {
+  ref: 'Review',
+  // Name of the field in the Review model where the tour is stored
+  foreignField: 'tour',
+  localField: '_id',
+});
+
+// Virtual properties are used when they are not needed to persist in the database
+// Virtual properties cannot be used in queries, because they are not technically part of the database.
+TourSchema.virtual('durationWeeks').get(function () {
+  return this.duration / 7;
+});
+
+TourSchema.pre('save', function () {
+  this.slug = slugify(this.name, { lower: true });
+});
+
+// TourSchema.pre(/^find/, function (next) {
+//   this.find({ secretTour: { $ne: true } });
+//   this.start = Date.now();
+// });
+
+TourSchema.pre<Query<TourDocument[], TourDocument>>(/^find/, function () {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+});
+
+// Pre-hook for slug updates
+TourSchema.pre<Query<TourDocument, TourDocument>>(
+  'findOneAndUpdate',
+  function () {
+    const update = this.getUpdate() as any; // TypeScript requires a cast
+
+    // Handle $set and top-level updates
+    const set = update.$set ?? update;
+
+    if (set.name) {
+      set.slug = slugify(set.name);
+      if (update.$set) {
+        update.$set.slug = set.slug;
+      } else {
+        this.setUpdate(set);
+      }
+    }
+  },
+);

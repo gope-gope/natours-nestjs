@@ -6,6 +6,7 @@ import {
   Body,
   Delete,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { ToursService } from './tours.service';
 import { Tour } from './tour.schema';
@@ -14,9 +15,14 @@ import { Tour } from './tour.schema';
 export class ToursController {
   constructor(private readonly tourService: ToursService) {}
 
+  @Get('/top-5-cheap')
+  async getTop5Cheap(): Promise<Tour[]> {
+    return await this.tourService.findTop5Cheap();
+  }
+
   @Get()
-  async getAllTours(): Promise<Tour[]> {
-    return await this.tourService.find();
+  async getAllTours(@Query() params): Promise<Tour[]> {
+    return await this.tourService.find(params);
   }
 
   @Get('/:id')
