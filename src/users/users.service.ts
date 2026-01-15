@@ -3,6 +3,7 @@ import { APIFeatures } from 'src/utils/apiFeatures';
 import { User, UserDocument } from './users.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -27,7 +28,7 @@ export class UsersService {
     return await this.userModel.findOne({ _id: id });
   }
 
-  async updateOne(id: string, body: User): Promise<User> {
+  async updateOne(id: string, body: UpdateUserDto): Promise<User> {
     return await this.userModel.findOneAndUpdate({ _id: id }, body, {
       returnOriginal: false,
     });

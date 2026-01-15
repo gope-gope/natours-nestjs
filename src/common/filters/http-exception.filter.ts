@@ -14,8 +14,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
 
-    console.log('error:', error);
-
     const res: ResponseDto<null> = {
       status: 'error',
       statusCode: HttpStatus.BAD_REQUEST,
