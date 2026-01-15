@@ -6,6 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ResponseDto } from '../dto/response.dto';
 
 @Catch(NotFoundException)
 export class NotFoundFilter implements ExceptionFilter {
@@ -14,10 +15,14 @@ export class NotFoundFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    response.status(HttpStatus.NOT_FOUND).json({
-      status: 'fail',
-      statusCode: 404,
+    const res: ResponseDto<null> = {
+      status: 'error',
+      statusCode: HttpStatus.NOT_FOUND,
       message: `Cannot find ${request.originalUrl} on this server`,
-    });
+      data: null,
+      dataLength: 0,
+    };
+
+    response.status(HttpStatus.NOT_FOUND).json(res);
   }
 }

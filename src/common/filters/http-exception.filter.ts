@@ -5,6 +5,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Error as MongooseError } from 'mongoose';
+import { ResponseDto } from '../dto/response.dto';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -13,53 +14,52 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
 
-    console.log('error;:', error);
+    console.log('error:', error);
+
+    const res: ResponseDto<null> = {
+      status: 'error',
+      statusCode: HttpStatus.BAD_REQUEST,
+      message: 'An error occurred',
+      data: null,
+      dataLength: 0,
+    };
 
     // Validation error
     if (error instanceof MongooseError.ValidationError) {
-      console.log('IF 1');
       const messages = Object.values(error.errors).map((err) => err.message);
-
-      return response.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Validation failed',
-        errors: messages,
-        path: request.url,
-      });
+      res.message = 'Validation failed: ' + messages.join(', ');
+      return response.status(HttpStatus.BAD_REQUEST).json(res);
     }
 
     // CastError (invalid ObjectId)
     if (error instanceof MongooseError.CastError) {
-      console.log('IF 2');
-
-      return response.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: `Invalid ${error.path}: ${error.value}`,
-      });
+      res.message = `Invalid ${error.path}: ${error.value}`;
+      return response.status(HttpStatus.BAD_REQUEST).json(res);
     }
 
     // Duplicate key error
     if ((error as any).code === 11000) {
-      console.log('IF 3');
-
       const field = Object.keys((error as any).keyValue)[0];
-      return response.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: `Duplicate field value: ${field}`,
-      });
+      res.message = `Duplicate field value: ${field}`;
+      return response.status(HttpStatus.BAD_REQUEST).json(res);
     }
 
+    // Other errors (e.g., thrown manually with HttpException)
     const errorAny = error as any;
-    const errorAnyMessage = errorAny.response.message.map(
-      (msg: string) => `${msg.slice(0, 1).toLocaleUpperCase() + msg.slice(1)}.`,
-    );
+    if (errorAny?.response?.message) {
+      const errorAnyMessage = Array.isArray(errorAny.response.message)
+        ? errorAny.response.message
+            .map(
+              (msg: string) =>
+                `${msg.slice(0, 1).toUpperCase() + msg.slice(1)}.`,
+            )
+            .join(' ')
+        : errorAny.response.message;
 
-    return response.status(HttpStatus.BAD_REQUEST).json({
-      status: errorAny.error,
-      statusCode: errorAny.statusCode,
-      message: errorAnyMessage,
-      data: null,
-      dataLength: 0,
-    });
+      res.statusCode = errorAny.statusCode ?? HttpStatus.BAD_REQUEST;
+      res.message = errorAnyMessage;
+    }
+
+    return response.status(res.statusCode).json(res);
   }
 }
