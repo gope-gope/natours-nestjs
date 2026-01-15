@@ -5,6 +5,8 @@ import { LoginDto } from './dto/login.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { Response, Request } from 'express';
 import { UpdateMeDto } from './dto/update-me.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('')
 export class AuthController {
@@ -39,5 +41,15 @@ export class AuthController {
   async updateMe(@Req() req: Request, @Body() body: UpdateMeDto) {
     const { jwt } = req.cookies;
     return await this.authService.updateMe(body, jwt);
+  }
+
+  @Post('/forgot-password')
+  async forgotPassword(@Req() req: Request, @Body() body: ForgotPasswordDto) {
+    return await this.authService.forgotPassword(body, req);
+  }
+
+  @Post('/reset-password/:token')
+  async resetPassword(@Req() req: Request, @Body() body: ResetPasswordDto) {
+    return await this.authService.resetPassword(body, req);
   }
 }
