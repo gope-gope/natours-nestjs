@@ -4,7 +4,9 @@ import {
   ArgumentsHost,
   HttpStatus,
 } from '@nestjs/common';
+
 import { Error as MongooseError } from 'mongoose';
+
 import { ResponseDto } from '../dto/response.dto';
 
 @Catch()
@@ -12,7 +14,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
   catch(error: unknown | MongooseError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const request = ctx.getRequest();
+    // const request = ctx.getRequest();
 
     const res: ResponseDto<null> = {
       status: 'error',

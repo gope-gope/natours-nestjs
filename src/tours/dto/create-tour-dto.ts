@@ -7,7 +7,6 @@ import {
   IsMongoId,
   IsDateString,
   Min,
-  Max,
   MinLength,
   MaxLength,
 } from 'class-validator';

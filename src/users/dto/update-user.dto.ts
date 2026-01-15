@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsUrl,
 } from 'class-validator';
+
 import { UserRole } from '../users.schema';
 
 export class UpdateUserDto {

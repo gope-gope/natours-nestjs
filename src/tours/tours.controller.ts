@@ -8,10 +8,11 @@ import {
   Patch,
   Query,
 } from '@nestjs/common';
-import { ToursService } from './tours.service';
-import { Tour } from './tours.schema';
-import { UpdateTourDto } from './dto/update-tour-dto';
+
 import { CreateTourDto } from './dto/create-tour-dto';
+import { UpdateTourDto } from './dto/update-tour-dto';
+import { Tour } from './tours.schema';
+import { ToursService } from './tours.service';
 
 @Controller('tours')
 export class ToursController {

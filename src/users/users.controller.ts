@@ -7,9 +7,10 @@ import {
   Patch,
   Query,
 } from '@nestjs/common';
+
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './users.schema';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {

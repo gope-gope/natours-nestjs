@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TourSchema, Tour } from './tours.schema';
 import { MongooseModule } from '@nestjs/mongoose';
+
 import { ToursController } from './tours.controller';
+import { TourSchema, Tour } from './tours.schema';
 import { ToursService } from './tours.service';
 
 @Module({

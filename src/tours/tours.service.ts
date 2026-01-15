@@ -1,10 +1,13 @@
 import { Injectable, Query } from '@nestjs/common';
-import { Tour, TourDocument } from './tours.schema';
 import { InjectModel } from '@nestjs/mongoose';
+
 import { DeleteResult, Model } from 'mongoose';
+
 import { APIFeatures } from 'src/utils/apiFeatures';
-import { UpdateTourDto } from './dto/update-tour-dto';
+
 import { CreateTourDto } from './dto/create-tour-dto';
+import { UpdateTourDto } from './dto/update-tour-dto';
+import { Tour, TourDocument } from './tours.schema';
 
 @Injectable()
 export class ToursService {

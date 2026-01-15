@@ -1,22 +1,28 @@
+import * as crypto from 'crypto';
+
 import {
   Injectable,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { UserDocument, User } from 'src/users/users.schema';
-import { createAndSendToken } from 'src/utils/jwt';
-import { SignupDto } from './dto/signup.dto';
-import { LoginDto } from './dto/login.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
+
 import * as jwt from 'jsonwebtoken';
-import { UpdateMeDto } from './dto/update-me.dto';
+import { Model } from 'mongoose';
+
 import { Request } from 'express';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
+
+import { UserDocument, User } from 'src/users/users.schema';
+
 import { sendEmail } from 'src/utils/email';
+import { createAndSendToken } from 'src/utils/jwt';
+
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { LoginDto } from './dto/login.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import * as crypto from 'crypto';
+import { SignupDto } from './dto/signup.dto';
+import { UpdateMeDto } from './dto/update-me.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Injectable()
 export class AuthService {

@@ -1,12 +1,14 @@
 import { Body, Controller, Patch, Post, Req, Res } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignupDto } from './dto/signup.dto';
-import { LoginDto } from './dto/login.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
+
 import { Response, Request } from 'express';
-import { UpdateMeDto } from './dto/update-me.dto';
+
+import { AuthService } from './auth.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { LoginDto } from './dto/login.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { SignupDto } from './dto/signup.dto';
+import { UpdateMeDto } from './dto/update-me.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Controller('')
 export class AuthController {

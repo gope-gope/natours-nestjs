@@ -1,4 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+
 import { HydratedDocument, Query, Types } from 'mongoose';
 import slugify from 'slugify';
 
