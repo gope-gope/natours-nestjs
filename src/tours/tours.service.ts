@@ -1,8 +1,10 @@
 import { Injectable, Query } from '@nestjs/common';
 import { Tour, TourDocument } from './tours.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { DeleteResult, Model } from 'mongoose';
 import { APIFeatures } from 'src/utils/apiFeatures';
+import { UpdateTourDto } from './dto/update-tour-dto';
+import { CreateTourDto } from './dto/create-tour-dto';
 
 @Injectable()
 export class ToursService {
@@ -20,25 +22,22 @@ export class ToursService {
       .limitFields()
       .paginate();
 
-    const tours = await features.getQuery();
-    return tours;
+    return await features.getQuery();
   }
 
   async findOne(id: string): Promise<Tour> {
-    const tour = await this.tourModel.findOne({ _id: id });
-    return tour;
+    return await this.tourModel.findOne({ _id: id });
   }
 
-  async create(tour: Tour): Promise<Tour> {
-    const newTour = await this.tourModel.create(tour);
-    return newTour;
+  async create(tour: CreateTourDto): Promise<Tour> {
+    return await this.tourModel.create(tour);
   }
 
-  async deleteOne(id: string) {
-    return await this.tourModel.findOneAndDelete({ _id: id });
+  async deleteOne(id: string): Promise<DeleteResult> {
+    return await this.tourModel.deleteOne({ _id: id });
   }
 
-  async findOneAndUpdate(id: string, body: Tour): Promise<Tour> {
+  async findOneAndUpdate(id: string, body: UpdateTourDto): Promise<Tour> {
     return await this.tourModel.findOneAndUpdate({ _id: id }, body, {
       returnOriginal: false,
     });

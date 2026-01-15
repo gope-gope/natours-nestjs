@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { ToursService } from './tours.service';
 import { Tour } from './tours.schema';
+import { UpdateTourDto } from './dto/update-tour-dto';
+import { CreateTourDto } from './dto/create-tour-dto';
 
 @Controller('tours')
 export class ToursController {
@@ -31,7 +33,7 @@ export class ToursController {
   }
 
   @Post()
-  async createTour(@Body() body): Promise<Tour> {
+  async createTour(@Body() body: CreateTourDto): Promise<Tour> {
     return await this.tourService.create(body);
   }
 
@@ -41,7 +43,10 @@ export class ToursController {
   }
 
   @Patch('/:id')
-  async updateTour(@Body() body, @Param('id') id: string) {
+  async updateTour(
+    @Body() body: UpdateTourDto,
+    @Param('id') id: string,
+  ): Promise<Tour> {
     return await this.tourService.findOneAndUpdate(id, body);
   }
 }

@@ -20,13 +20,7 @@ export class AuthService {
 
     const token = createAndSendToken(newUser);
 
-    return {
-      status: 'success',
-      token: token,
-      data: {
-        newUser,
-      },
-    };
+    return token();
   }
 
   async login(body) {
@@ -41,12 +35,6 @@ export class AuthService {
 
     const token = createAndSendToken(user);
 
-    return {
-      status: 'success',
-      token: token,
-      data: {
-        user,
-      },
-    };
+    return token;
   }
 }
