@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 
 import { Response, Request } from 'express';
 
@@ -7,8 +7,6 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignupDto } from './dto/signup.dto';
-import { UpdateMeDto } from './dto/update-me.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Controller('')
 export class AuthController {
@@ -31,18 +29,6 @@ export class AuthController {
     });
 
     return token;
-  }
-
-  @Patch('/update-my-password')
-  async updatePassword(@Req() req: Request, @Body() body: UpdatePasswordDto) {
-    const { jwt } = req.cookies;
-    return await this.authService.updatePassword(body, jwt);
-  }
-
-  @Patch('/update-me')
-  async updateMe(@Req() req: Request, @Body() body: UpdateMeDto) {
-    const { jwt } = req.cookies;
-    return await this.authService.updateMe(body, jwt);
   }
 
   @Post('/forgot-password')
