@@ -15,7 +15,9 @@ import { DeleteResult } from 'mongoose';
 
 import { Request } from 'express';
 
-import { ProtectGuard } from 'src/common/guards/protect-guard';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { AuthGuard } from 'src/common/guards/auth-guard';
+import { RolesGuard } from 'src/common/guards/role-guard';
 import { UpdateMeDto } from 'src/users/dto/update-me.dto';
 import { UpdatePasswordDto } from 'src/users/dto/update-password.dto';
 
@@ -28,14 +30,14 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Patch('/update-me')
-  @UseGuards(ProtectGuard)
+  @UseGuards(AuthGuard)
   async updateMe(@Req() req: Request, @Body() body: UpdateMeDto) {
     const { jwt } = req.cookies;
     return await this.userService.updateMe(body, jwt);
   }
 
   @Patch('/update-my-password')
-  @UseGuards(ProtectGuard)
+  @UseGuards(AuthGuard)
   async updatePassword(@Req() req: Request, @Body() body: UpdatePasswordDto) {
     const { jwt } = req.cookies;
     return await this.userService.updatePassword(body, jwt);
@@ -55,9 +57,9 @@ export class UsersController {
     return plainToInstance(UserDto, userDoc, { excludeExtraneousValues: true });
   }
 
-  // TODO :: ADMIN ONLY
   @Patch('/:id')
-  @UseGuards(ProtectGuard)
+  @Roles(['admin'])
+  @UseGuards(AuthGuard, RolesGuard)
   async patchUser(
     @Param('id') id: string,
     @Body() body: UpdateUserDto,
@@ -66,9 +68,9 @@ export class UsersController {
     return plainToInstance(UserDto, userDoc, { excludeExtraneousValues: true });
   }
 
-  // TODO :: ADMIN ONLY
   @Delete('/:id')
-  @UseGuards(ProtectGuard)
+  @Roles(['admin'])
+  @UseGuards(AuthGuard, RolesGuard)
   async deleteUser(@Param('id') id: string): Promise<DeleteResult> {
     return await this.userService.deleteOne(id);
   }

@@ -10,7 +10,7 @@ import * as jwt from 'jsonwebtoken';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
-export class ProtectGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(private readonly usersSerice: UsersService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -41,6 +41,8 @@ export class ProtectGuard implements CanActivate {
         'Password was changed after JWT issue. Please login again.',
       );
     }
+
+    request.user = user;
 
     // 5. Grant access to protected route
     return true;

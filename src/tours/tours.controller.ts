@@ -12,7 +12,9 @@ import {
 
 import { plainToInstance } from 'class-transformer';
 
-import { ProtectGuard } from 'src/common/guards/protect-guard';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { AuthGuard } from 'src/common/guards/auth-guard';
+import { RolesGuard } from 'src/common/guards/role-guard';
 
 import { CreateTourDto } from './dto/create-tour-dto';
 import { TourDto } from './dto/tour.dto';
@@ -48,7 +50,8 @@ export class ToursController {
   }
 
   @Post()
-  @UseGuards(ProtectGuard)
+  @Roles(['admin'])
+  @UseGuards(AuthGuard, RolesGuard)
   async createTour(@Body() body: CreateTourDto): Promise<TourDto> {
     const tourDoc = await this.tourService.create(body);
     return plainToInstance(TourDto, tourDoc, {
@@ -57,13 +60,15 @@ export class ToursController {
   }
 
   @Delete('/:id')
-  @UseGuards(ProtectGuard)
+  @Roles(['admin'])
+  @UseGuards(AuthGuard, RolesGuard)
   async deleteTour(@Param('id') id: string) {
     await this.tourService.deleteOne(id);
   }
 
   @Patch('/:id')
-  @UseGuards(ProtectGuard)
+  @Roles(['admin'])
+  @UseGuards(AuthGuard, RolesGuard)
   async updateTour(
     @Body() body: UpdateTourDto,
     @Param('id') id: string,
