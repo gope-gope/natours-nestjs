@@ -2,7 +2,7 @@ import { Injectable, Query, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import * as jwt from 'jsonwebtoken';
-import { Model } from 'mongoose';
+import { DeleteResult, Model } from 'mongoose';
 
 import { UpdateMeDto } from 'src/users/dto/update-me.dto';
 import { UpdatePasswordDto } from 'src/users/dto/update-password.dto';
@@ -19,7 +19,7 @@ export class UsersService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async find(@Query() queryString) {
+  async find(@Query() queryString): Promise<UserDocument[]> {
     const features = new APIFeatures<UserDocument>(
       this.userModel.find(),
       queryString,
@@ -32,21 +32,24 @@ export class UsersService {
     return await features.getQuery();
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOne(id: string): Promise<UserDocument> {
     return await this.userModel.findOne({ _id: id });
   }
 
-  async updateOne(id: string, body: UpdateUserDto): Promise<User> {
+  async updateOne(id: string, body: UpdateUserDto): Promise<UserDocument> {
     return await this.userModel.findOneAndUpdate({ _id: id }, body, {
       returnOriginal: false,
     });
   }
 
-  async deleteOne(id: string) {
+  async deleteOne(id: string): Promise<DeleteResult> {
     return await this.userModel.findOneAndDelete({ _id: id });
   }
 
-  async updatePassword(body: UpdatePasswordDto, token: string) {
+  async updatePassword(
+    body: UpdatePasswordDto,
+    token: string,
+  ): Promise<string> {
     const { passwordCurrent, password, passwordConfirm } = body;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -75,7 +78,7 @@ export class UsersService {
     return newToken;
   }
 
-  async updateMe(body: UpdateMeDto, token: string) {
+  async updateMe(body: UpdateMeDto, token: string): Promise<UserDocument> {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // 1. Check jwt expiry

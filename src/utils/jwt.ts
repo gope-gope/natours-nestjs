@@ -1,13 +1,15 @@
 import * as jwt from 'jsonwebtoken';
 
-const signToken = (id: string) => {
+import { UserDocument } from 'src/users/users.schema';
+
+const signToken = (id: string): string => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
-export const createAndSendToken = (user) => {
-  const token = signToken(user._id);
+export const createAndSendToken = (user: UserDocument) => {
+  const token = signToken(user._id.toString());
 
   const cookieOptions = {
     expires: new Date(

@@ -5,10 +5,8 @@ import slugify from 'slugify';
 
 export type TourDocument = HydratedDocument<Tour>;
 
-// Create a mongoose schema for the tours
 @Schema()
 export class Tour {
-  // Schema definition
   @Prop({
     required: [true, 'A tour must have a name.'],
     unique: true,
@@ -69,7 +67,7 @@ export class Tour {
   @Prop({ type: [String] })
   images: string[];
 
-  @Prop({ type: Date, default: Date.now, select: false })
+  @Prop({ type: Date, default: Date.now })
   createdAt: Date;
 
   @Prop({ type: [Date] })
@@ -109,11 +107,6 @@ TourSchema.virtual('durationWeeks').get(function () {
 TourSchema.pre('save', function () {
   this.slug = slugify(this.name, { lower: true });
 });
-
-// TourSchema.pre(/^find/, function (next) {
-//   this.find({ secretTour: { $ne: true } });
-//   this.start = Date.now();
-// });
 
 TourSchema.pre<Query<TourDocument[], TourDocument>>(/^find/, function () {
   this.populate({

@@ -15,7 +15,7 @@ export class ToursService {
     @InjectModel(Tour.name) private readonly tourModel: Model<TourDocument>,
   ) {}
 
-  async find(@Query() queryString) {
+  async find(@Query() queryString): Promise<TourDocument[]> {
     const features = new APIFeatures<TourDocument>(
       this.tourModel.find(),
       queryString,
@@ -28,11 +28,11 @@ export class ToursService {
     return await features.getQuery();
   }
 
-  async findOne(id: string): Promise<Tour> {
+  async findOne(id: string): Promise<TourDocument> {
     return await this.tourModel.findOne({ _id: id });
   }
 
-  async create(tour: CreateTourDto): Promise<Tour> {
+  async create(tour: CreateTourDto): Promise<TourDocument> {
     return await this.tourModel.create(tour);
   }
 
@@ -40,13 +40,16 @@ export class ToursService {
     return await this.tourModel.deleteOne({ _id: id });
   }
 
-  async findOneAndUpdate(id: string, body: UpdateTourDto): Promise<Tour> {
+  async findOneAndUpdate(
+    id: string,
+    body: UpdateTourDto,
+  ): Promise<TourDocument> {
     return await this.tourModel.findOneAndUpdate({ _id: id }, body, {
       returnOriginal: false,
     });
   }
 
-  async findTop5Cheap(): Promise<Tour[]> {
+  async findTop5Cheap(): Promise<TourDocument[]> {
     return await this.tourModel
       .find({ secretTour: { $ne: true } })
       .sort({ ratingsAverage: -1, price: 1 })

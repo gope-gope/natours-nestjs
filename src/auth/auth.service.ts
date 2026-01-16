@@ -37,7 +37,7 @@ export class AuthService {
 
     const token = createAndSendToken(newUser);
 
-    return token();
+    return token;
   }
 
   async login(body: LoginDto) {

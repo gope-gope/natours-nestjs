@@ -79,7 +79,6 @@ export class User {
 
   @Prop({
     default: true,
-    select: false,
   })
   active: boolean;
 }
