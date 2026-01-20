@@ -45,11 +45,15 @@ export class AuthService {
 
     const user = await this.userModel.findOne({ email }).select('+password');
     if (!user)
-      throw new UnauthorizedException('Wrong password or email address.');
+      throw new UnauthorizedException(
+        'Invalid email or password. Please try again.',
+      );
 
     const correct = await user.correctPassword(password, user.password);
     if (!correct)
-      throw new UnauthorizedException('Wrong password or email address.');
+      throw new UnauthorizedException(
+        'Invalid email or password. Please try again.',
+      );
 
     const token = createAndSendToken(user);
     return token;
@@ -99,7 +103,7 @@ export class AuthService {
     // 2. If token has not expires, and there is a user, set the new password
     if (!user)
       throw new UnauthorizedException(
-        'The reset password token is not valid or expired.',
+        'The reset password token is not valid or has expired.',
       );
 
     // 3. Update changedPasswordAt for the user

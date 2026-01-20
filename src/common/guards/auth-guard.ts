@@ -38,7 +38,7 @@ export class AuthGuard implements CanActivate {
     );
     if (isPasswordChangedAfterJWTIssuedTimestamp) {
       throw new UnauthorizedException(
-        'Password was changed after JWT issue. Please login again.',
+        'Password was changed after token issue. Please login again.',
       );
     }
 

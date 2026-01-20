@@ -55,7 +55,9 @@ export class UsersService {
 
     // 1. Check jwt expiry
     if (decoded.exp > Date.now())
-      throw new UnauthorizedException('Expired token.');
+      throw new UnauthorizedException(
+        'This token has expired. Please login again.',
+      );
 
     // 2. Check if user exists
     const user = await this.userModel.findById(decoded.id).select('+password');
@@ -66,7 +68,8 @@ export class UsersService {
       passwordCurrent,
       user.password,
     );
-    if (!isCorrect) throw new UnauthorizedException('Wrong password.');
+    if (!isCorrect)
+      throw new UnauthorizedException('Wrong password. Please try again.');
 
     // 4. Change password
     user.password = password;
@@ -83,7 +86,9 @@ export class UsersService {
 
     // 1. Check jwt expiry
     if (decoded.exp > Date.now())
-      throw new UnauthorizedException('Expired token.');
+      throw new UnauthorizedException(
+        'This token has expired. Please login again.',
+      );
 
     // 2. Check if user exists
     const user = await this.userModel.findById(decoded.id);

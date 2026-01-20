@@ -1,18 +1,12 @@
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { StrongPassword } from 'src/common/decorators/password.decorator';
 
 export class UpdatePasswordDto {
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(6)
+  @StrongPassword()
   passwordCurrent: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(6)
+  @StrongPassword()
   password: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(6)
+  @StrongPassword()
   passwordConfirm: string;
 }
