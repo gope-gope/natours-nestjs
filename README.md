@@ -1,73 +1,150 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Natours API (NestJS)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS REST API inspired by the “Natours” app: tours, users, auth, and reviews backed by MongoDB (Mongoose). Includes request validation, consistent response formatting, and Swagger docs.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Key features
 
-## Description
+- **Tours**: CRUD, top-5-cheap, stats, monthly plan, geospatial queries (within distance, distances)
+- **Auth**: signup/login, JWT stored in an **httpOnly cookie**, forgot/reset password (email)
+- **Users**: update profile (“me”), update password, admin-only user management
+- **Reviews**: fetch reviews for a tour
+- **DX**: global validation pipe, global exception filters, global response interceptor, Swagger at `/api`
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tech stack
 
-## Installation
+- **Framework**: NestJS
+- **DB**: MongoDB + Mongoose
+- **Auth**: JWT (`jsonwebtoken`) + cookies (`cookie-parser`)
+- **Email**: Nodemailer (configured for Mailtrap-style SMTP)
+- **Validation**: `class-validator` / `class-transformer`
+- **Docs**: `@nestjs/swagger`
+
+## Getting started
+
+### Prerequisites
+
+- **Node.js**: any recent Node version should work; the project uses pnpm
+- **pnpm**: `npm i -g pnpm`
+- **MongoDB**: local or Atlas connection string
+
+### Install
 
 ```bash
-$ pnpm install
+pnpm install
 ```
 
-## Running the app
+### Configure environment variables
+
+1. Create `.env` (do not commit it):
 
 ```bash
-# development
-$ pnpm run start
+cp .env.example .env
+```
+
+2. Fill the values in `.env` (see “Environment variables” below).
+
+> Important: if you ever committed real secrets, rotate them (DB user/password, JWT secret, SMTP creds).
+
+### Run
+
+```bash
+# development (SWC)
+pnpm start
 
 # watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm start:dev
 ```
 
-## Test
+The API listens on **`http://localhost:8000`**.
+
+## API documentation (Swagger)
+
+Once running, open:
+
+- **Swagger UI**: `http://localhost:8000/api`
+
+## Main routes (high level)
+
+Base URL: `http://localhost:8000`
+
+### Auth
+
+- `POST /signup`
+- `POST /login` (sets `jwt` httpOnly cookie)
+- `POST /forgot-password`
+- `POST /reset-password/:token`
+
+### Tours
+
+- `GET /tours`
+- `GET /tours/:id`
+- `GET /tours/top-5-cheap`
+- `GET /tours/tour-stats`
+- `GET /tours/monthly-plan/:year` (**roles**: `admin`, `guide`)
+- `GET /tours/tours-within/:distance/center/:latlng/unit/:unit`
+- `GET /tours/distances/:latlng/unit/:unit`
+- `POST /tours` (**role**: `admin`)
+- `PATCH /tours/:id` (**role**: `admin`)
+- `DELETE /tours/:id` (**role**: `admin`)
+
+### Users
+
+- `GET /users`
+- `GET /users/:id`
+- `PATCH /users/update-me` (authenticated)
+- `PATCH /users/update-my-password` (authenticated)
+- `PATCH /users/:id` (**role**: `admin`)
+- `DELETE /users/:id` (**role**: `admin`)
+
+### Reviews
+
+- `GET /reviews/:id` (reviews for a tour id)
+
+## Environment variables
+
+The app uses `@nestjs/config` and reads `.env` at startup.
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `DB_URL` | yes | MongoDB connection string |
+| `JWT_SECRET` | yes | JWT signing secret (recommend 32+ chars) |
+| `JWT_EXPIRES_IN` | yes | JWT expiration (e.g. `1h`) |
+| `JWT_COOKIE_EXPIRES_IN` | yes | Cookie expiration (days) |
+| `EMAIL_USERNAME` | for emails | SMTP username |
+| `EMAIL_PASSWORD` | for emails | SMTP password |
+| `EMAIL_HOST` | for emails | SMTP host |
+| `EMAIL_PORT` | for emails | SMTP port |
+
+## Useful scripts
 
 ```bash
-# unit tests
-$ pnpm run test
+pnpm build
+pnpm start:prod
 
-# e2e tests
-$ pnpm run test:e2e
+pnpm lint
+pnpm format
 
-# test coverage
-$ pnpm run test:cov
+pnpm test
+pnpm test:e2e
+pnpm test:cov
 ```
 
-## Support
+## Project structure
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```text
+src/
+  app.module.ts
+  main.ts
+  auth/
+  tours/
+  users/
+  reviews/
+  common/   # guards, filters, interceptors, decorators, shared DTOs
+  utils/    # jwt, email, apiFeatures
+```
 
-## Stay in touch
+## Notes / troubleshooting
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- **Auth cookie**: `POST /login` sets a `jwt` cookie. When calling protected routes from a client, ensure cookies are included (`credentials: 'include'` in `fetch`, `withCredentials: true` in axios).
+- **Mongo connection**: if startup fails, validate `DB_URL` and IP allowlist (Atlas).
+- **Email**: password reset relies on SMTP settings; use Mailtrap (or another SMTP provider) for local testing.
