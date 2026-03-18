@@ -18,14 +18,20 @@ export class ResponseInterceptor<T> implements NestInterceptor<
     context: ExecutionContext,
     next: CallHandler,
   ): Observable<ResponseDto<T>> {
-    return next.handle().pipe(
-      map((data) => ({
-        status: 'success',
-        statusCode: context.switchToHttp().getResponse().statusCode,
-        message: 'Request successful',
-        data,
-        dataLength: Array.isArray(data) ? data.length : undefined,
-      })),
+    const result$ = next.handle();
+    /* === Before logic === */
+
+    return result$.pipe(
+      map((data) => {
+        /* === After logic === */
+        return {
+          status: 'success',
+          statusCode: context.switchToHttp().getResponse().statusCode,
+          message: 'Request successful',
+          data,
+          dataLength: Array.isArray(data) ? data.length : undefined,
+        };
+      }),
     );
   }
 }
